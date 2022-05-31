@@ -29,7 +29,7 @@ Array *
 array_init(
     size_t item_size
     , size_t size
-    , void * array_buffer)
+    , const void * array_buffer)
 {
     if(item_size == 0 
         || size == 0)
@@ -38,20 +38,34 @@ array_init(
     }
 
     Array * array = 
-        malloc((sizeof(Array)) + (item_size * size));
+        malloc(sizeof(Array) + (item_size * size));
 
     if(array == NULL) return NULL;
 
     array->item_size = item_size;
     array->size      = size;
-
+    
     memcpy(
-        ARRAY(array)
+        ((char*) array + sizeof(Array))
         , array_buffer
         , size * item_size);
-
-
+    
     return array;
+}
+
+
+Array *
+array_clone(Array * array)
+{
+    size_t byte_size = sizeof(Array) + (array->size * array->item_size);
+    
+    Array * clone = malloc(byte_size);
+
+    if(clone == NULL) return NULL;
+
+    memcpy(clone, array, byte_size);
+
+    return clone;
 }
 
 
@@ -71,10 +85,10 @@ array_resize(
     resized_array->size      = new_size;
 
     memcpy(
-        resized_array+sizeof(Array)
-        , array+sizeof(Array)
+        ((char*) resized_array + sizeof(Array))
+        , ((char*) array + sizeof(Array))
         , array->item_size * array->size);
-    
+ 
     free(array);
 
     return resized_array;

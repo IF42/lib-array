@@ -3,11 +3,23 @@
 #include <array.h>
 
 
+typedef struct 
+{
+    Array super;
+    int vector[];
+}IntArray;
+
+
+
+
 int
 main(void)
 {
-    Array * array = array_init(sizeof(int), 3, (int[]){1,2,3});
-
+    IntArray * array = 
+        (IntArray*) array_init(
+                sizeof(int)
+                , 3 
+                , (int[]) {1,2,3});
 
     if(array == NULL)
     {
@@ -15,13 +27,12 @@ main(void)
         return EXIT_FAILURE;
     }
 
-    for(size_t i = 0; i < array->size; i++)
+    for(size_t i = 0; i < array->super.size; i++)
     {
-        printf("%ld | %d\n",i, ((int*)ARRAY(array))[i]);
+        printf("%ld | %d\n",i, array->vector[i]);
     }
 
-
-    array = array_resize(array, 5);
+    array = (IntArray*) array_resize(ARRAY(array), 5);
 
     if(array == NULL)
     {
@@ -31,14 +42,14 @@ main(void)
 
     putchar('\n');
 
+    IntArray * clone = (IntArray*)array_clone(ARRAY(array));
 
-    for(size_t i = 0; i < array->size; i++)
+    for(size_t i = 0; i < array->super.size; i++)
     {
-        printf("%ld | %d\n",i, ((int*) ARRAY(array))[i]);
+        printf("%ld | %d | %d\n",i, array->vector[i], clone->vector[i]);
     }
 
     free(array);
-
 
     printf("Program exit success.\n");
     

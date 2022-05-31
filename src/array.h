@@ -12,10 +12,7 @@ typedef struct
 }Array;
 
 
-#define ARRAY(T)                                    \
-    _Generic(                                       \
-        (T)                                         \
-        , Array*: ((void*)((T) + sizeof(Array))))
+#define ARRAY(T) ((Array *) T)
 
 
 Array * 
@@ -28,7 +25,11 @@ Array *
 array_init(
     size_t item_size
     , size_t size
-    , void * array_buffer);
+    , const void * array_buffer);
+
+
+Array *
+array_clone(Array * array);
 
 
 Array *
